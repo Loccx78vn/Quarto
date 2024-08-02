@@ -13,13 +13,13 @@ The field of Logistics and Supply Chain Management has been a popular topic for 
 
 In a lot of biggest port in the world such as Busan port in Korea, Rotterdam port in Belgium, Singapore port or Shanghai port in China, there are an average of 20-30 millions TEU of goods are traded yearly or in other means eqaul to `20*10^6*2300` meter tons of goods. That's really big number reflect the bustle of international operations.
 
-![Definition of Supply Chain Management](img/Supply Chain Management.jpg)
+![Definition of Supply Chain Management](img/Supply%20Chain%20Management.jpg)
 
 # Definition of Supply Chain Management
 
 So supply chain management arised like a important term in internal operations in business. In my opinion, it's a term, not a particular position in the comapny with the main function is optimizing all the activities such as: managing the material flow from supplier, standardize the process of production and distribution. The final objective is ensuring product get to end-customer in the minimal time and also supply the best services as could as possible. Supply chain management has emerged as an important concept in the internal operations of businesses. This picture below illustrate how supply chain in real life.
 
-![Supply Chain Operation](img/Supply Chain Operation.jpg)
+![Supply Chain Operation](img/Supply%20Chain%20Operation.jpg)
 
 # Let practices:
 
