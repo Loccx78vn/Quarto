@@ -1,0 +1,245 @@
+---
+title: "Spatial analyst"
+---
+
+So let's pratice !!!
+
+## Spatial analyst:
+
+  Now let's start with data contains the information of longitude and latitude of customer's locations. Member install data [optimize](index.qmd) before.
+
+```{r}
+#| include: false
+#| echo: false
+library(readxl)
+optimize<-read.csv(r"(C:\\Users\\locca\\Documents\\Xuân Lộc\\VILAS\\Final project\\Optimize_df.csv)")
+
+## Call packages:
+pacman::p_load(rio,
+               here,
+               janitor,
+               tidyverse,
+               dplyr,
+               magrittr,
+               ggplot2,
+               purrr,
+               lubridate,
+               knitr,
+               shiny)
+```
+
+```{r}
+#| echo: true
+#| message: false
+
+#New manufacter:
+new_manufacter= data.frame(
+  Customers = str_c(rep("Manufacter"),1:3),
+  Latitude =c(21.12256201,21.68421,20.34250),
+  Longitude = c(105.9150683,105.1940,106.2946),
+  Total.transactions = c(0,0,0),
+  Inventory = c(3000,2000,2500))
+
+route<-rbind(new_manufacter,
+             optimize%>% select(Customers,
+                                Longitude,
+                                Latitude,
+                                Total.transactions) %>% 
+               mutate(Inventory = round(runif(50,100,400)))
+)
+
+colnames(route)[4]<-"Demand"
+
+route$Node<-1:nrow(route)
+
+## Adding status:
+route$Status <- ifelse(route$Inventory - route$Demand > round(mean(route$Demand)/2),"Control",ifelse(route$Inventory- route$Demand  > 0,"Warning","Outstock" ))
+
+```
+
+  So we have enough data to pratice. Let show this data in map for clearly understading.
+  
+### Map of supply chain management
+
+```{r}
+#| fig-cap: "The location of all customers and internal manufacters"
+#Prepare labels:
+labels<- paste0("<strong> Customers </strong> ",
+               route$Customers, "<br/> ",
+               "<strong> Inventory: </strong> ",
+               route$Inventory, "<br/> ",
+               "<strong> Demand </strong> ",
+               route$Demand, "<br/> ",
+               "<strong> Status </strong> ",
+               route$Status, "<br/> ") %>% 
+         lapply(htmltools::HTML)
+
+library(leaflet)
+library(fontawesome) 
+#If you don't have, try to install by: devtools::install_github("rstudio/fontawesome")
+logos <- awesomeIconList(
+  Customer = makeAwesomeIcon(
+    icon = "home",
+    iconColor = "white",
+    markerColor = "blue",
+    library = "fa"),
+  Manufacter = makeAwesomeIcon(
+    icon = "beer",
+    iconColor = "gold",
+    markerColor = "black",
+    library = "fa")
+)
+
+#Prepare the logos:
+route$ticker<-c(rep("Manufacter",3),
+                rep("Customer",
+                    nrow(route)-3))
+
+leaflet(data = route) %>% 
+  addTiles() %>%
+  addAwesomeMarkers(
+             lng = ~Longitude, 
+             lat = ~Latitude, 
+             label = ~labels,
+             icon = ~logos[ticker]) %>% 
+  setView(lng = mean(route$Longitude), 
+          lat = mean(route$Latitude),
+          zoom = 7) 
+```
+
+  In the following code, I want to emphasize that the names of colors should have the first letter capitalized. For example, use "Red" instead of "red".
+  
+  You might be wondering why this is important, and I had the same question :)). After some online research, I found a response to a similar question about changing the color of markers in R using Leaflet [Leaflet change color of markers (R)](https://stackoverflow.com/questions/71726478/leaflet-change-color-of-markers-r). 
+  
+  It was mentioned that capitalizing the first letter allows R to color the markers based on different factors. If you don't capitalize the first letter, R will color the markers randomly (I'm not sure why).
+
+```{r}
+#| fig-cap: "The mini map by clustering the locations"
+#Setting the level of status
+route$Status<-fct_relevel(route$Status,"Control","Warning","Outstock")
+
+#Prepare palette for labeling control/warning/outstock:
+palPwr <- leaflet::colorFactor(palette = c("Lightgreen","Yellow","Red"), 
+                               domain = route$Status,
+                               ordered = T)
+
+#Prepare font for labeling
+font<-labelOptions(noHide = T, 
+                  direction = "bottom",
+                  style = list(
+        "font-family" = "serif",
+        "font-style" = "ilatic",
+        "box-shadow" = "3px 3px rgba(0,0,0,0.25)",
+        "font-size" = "10px",
+        "border-color" = "rgba(0,0,0,0.5)"
+      ))
+
+#Plot map with leaflet:
+library(leaflet.extras)
+leaflet(data = route) %>% 
+  addProviderTiles("CartoDB.Positron") %>% 
+  addCircleMarkers(radius = 10, # size of the dots
+                   fillOpacity = .7, # alpha of the dots
+                   stroke = FALSE, # no outline
+                   label = ~labels,
+                   lng = ~Longitude, 
+                   lat = ~Latitude, 
+                   color = ~palPwr(route$Status),
+                   clusterOptions = markerClusterOptions(),
+                   labelOptions = font) %>% 
+  leaflet::addLegend(position = "bottomright",
+            values = ~Status, # data frame column for legend
+            opacity = .7,
+            pal = palPwr, # palette declared earlier
+            title = "Status") %>%   # legend titleƯ
+  addResetMapButton()
+```
+
+  Also for adjusting the base map, you can base on the preview of base map in [Leaflet preview](https://leaflet-extras.github.io/leaflet-providers/preview/) and copy the name of provider to paste in the argument {addProviderTitles}. For instance, I use provider = `CartoDB.Positron`.
+
+## Routing the vehicle's path for Supply Chain Plan:
+
+To set up the connection between RStudio and GitHub, you can use the `source()` function and assign the URL link of the GitHub repository that contains the R script you need. Remember to click on "Raw" to move to another page and then copy that URL.
+
+I found the original code in Viktor Plamenov's project on [GitLab](https://gitlab.com/vikplamenov/vrpoptima/-/tree/main/R?ref_type=heads). I found it convenient to use, so I copied and uploaded it to my private GitHub repository. You can use this URL for your work.
+
+The author created the package {vrpoptima} for easily install and using it. You can install by package {remote}, another details you can read in this link [remotes](https://remotes.r-lib.org/reference/install_gitlab.html)
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+# Repo must in format username/repo[@ref].
+remotes::install_gitlab("vikplamenov/vrpoptima")
+```
+
+```{r}
+#| warning: false
+#| message: false
+library(vrpoptima)
+colnames(optimize)[2:3]<-c("lat","lon")
+colnames(new_manufacter)[2:3]<-c("lat","lon")
+
+mat_optimize<-as.matrix(optimize[,2:3])
+
+dist_optimize<-as.matrix(geodist::geodist(mat_optimize,measure = 'haversine')/1000)
+
+mat_WH<-as.matrix(new_manufacter[,2:3])
+```
+
+Next, just simply add the criteria and run the code illustrated below.
+
+```{r}
+#| warning: false
+#| echo: false
+#Optimizing:
+(solution <-  VehicleRouting(visit_points = mat_optimize,
+                           num_agents = nrow(new_manufacter),
+                           agent_points = as.matrix(new_manufacter[,2:3]),
+                           cost_type = 2,
+                           max_tour_distance = 250000,
+                           max_tour_visits = 30,
+                           distance_metric = 'Geodesic',
+                           distance_matrix = dist_optimize,
+                           min_tour = 2,
+                           population_size = 96,
+                           num_generations = 1000, 
+                           distance_truncation = TRUE, 
+                           seed = 42)
+)
+
+```
+
+Finally, plot the results of optimization by two functions:
+* `PlotToursCombined` function: use to display of the combined routes created with the genetic program 
+* `PlotToursIndividual` function: use to display of the individual routes created with the genetic program.
+
+```{r}
+#Plot the results:
+routes <- solution$routes
+rownames(routes) <- 1:nrow(routes)
+routes_list = RoutesDataPrep(routes = solution$routes, 
+                             visit_points = mat_optimize, 
+                             agent_points = as.matrix(new_manufacter[,2:3]))
+
+
+# Display all routes at the same time
+PlotToursCombined(solution = solution, 
+                  routes_list = routes_list,
+                  agent_locations = as.matrix(new_manufacter[,2:3]),
+                  orientation = "vertical")
+
+# Display all the inidividual routes on a single figure block
+PlotToursIndividual(solution = solution, 
+                    routes_list = routes_list)
+```
+
+# References:
+
+Thanks to all authors of documentaions below that help me complete this pratice.
+
+* [leaflet](https://www.jla-data.net/eng/leaflet-in-r-tips-and-tricks/) by Jindra Lacko.
+
+* [How to Use Git/GitHub with R](https://rfortherestofus.com/2021/02/how-to-use-git-github-with-r) by David Keyes.
+
+* [Multiple Depot in VRP](https://gitlab.com/vikplamenov/vrpoptima/-/blob/main/R/VehicleRouting.R?ref_type=heads) by Viktor Plamenov.

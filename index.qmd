@@ -1,19 +1,86 @@
 ---
-title: "About Me"
-about:
-  id: me
-  template: broadside
-  image: img/profile.png
+title: "Introduction"
+author: "Xuan Loc"
+format: 
+  html:
+    code-fold: true
+    code-tools: true
 ---
 
-:::{#me}
+# Introduce the problems:
 
-## Goals
+The field of Logistics and Supply Chain Management has been a popular topic for the past 10 years and continues to be relevant today. This trend is due to the ongoing evolution of global trade. Nowadays, businesses are not only focused on their market share in host country but also seek to expand into international markets. For example, some of the largest ports in the world, such as Busan port in Korea, Rotterdam port in Belgium, Singapore port, and Shanghai port in China, witness an average trade of 20-30 million TEU of goods annually. This is equivalent to about 20 million TEU multiplied by 2300, which equals 46000000 meter tons of goods. These staggering numbers reflect the bustling nature of international operations.for 10 years ago up to now. Main reason for this uptrend is the progressive evolution in global trading in the world. Nowadays, businesses not only cares about their market share in host country but also reach out to the international market.
 
-## Education
+In a lot of biggest port in the world such as Busan port in Korea, Rotterdam port in Belgium, Singapore port or Shanghai port in China, there are an average of 20-30 millions TEU of goods are traded yearly or in other means eqaul to `20*10^6*2300` meter tons of goods. That's really big number reflect the bustle of international operations.
 
-## Experience
+![Definition of Supply Chain Management](img/Supply%20Chain%20term.jpg)
 
-:::
+# Definition of Supply Chain Management
+
+So supply chain management arised like a important term in internal operations in business. In my opinion, it's a term, not a particular position in the comapny with the main function is optimizing all the activities such as: managing the material flow from supplier, standardize the process of production and distribution. The final objective is ensuring product get to end-customer in the minimal time and also supply the best services as could as possible. Supply chain management has emerged as an important concept in the internal operations of businesses. This picture below illustrate how supply chain in real life.
+
+![Supply Chain Operation](img/Supply%20Chain%20Operation.jpg)
+
+# Let practices:
+
+So in this pratice, we will learn a lot of concepts of supply chain operations and how to implement in Rstudio.
+
+## Prepare a list of packages:
+
+Firstly, the frequency job when working with **Rmarkdown** is calling packages. You should list all packages is needed to call and then using this code: pacman::p_load(*list_name_package*). Below is the illustration.
+
+```{r}
+## Call packages:
+pacman::p_load(rio,
+               here,
+               janitor,
+               tidyverse,
+               dplyr,
+               magrittr,
+               ggplot2,
+               purrr,
+               lubridate,
+               knitr,
+               shiny)
+```
+
+## Install data:
+
+```{r, include= FALSE}
+library(readxl)
+procurement_data <- read_excel(r"(C:/Users/locca/Documents/Xuân Lộc/VILAS/Data_Chuong 7/procurement_data.xlsx)")
+
+optimize<-read.csv(r"(C:\\Users\\locca\\Documents\\Xuân Lộc\\VILAS\\Final project\\Optimize_df.csv)")
+```
+
+Then installing your data to R. I get it by my computer's address, so if you want to use it, you should download file by click button. In this chapter, we just need 2 dataset.
+
+```{r}
+library(downloadthis)
+
+procurement_data %>%
+  download_this(
+    output_name = "procurement_data",
+    output_extension = ".csv",
+    button_label = "Download data",
+    button_type = "warning",
+    has_icon = TRUE,
+    icon = "fa fa-save"
+  )
+```
+
+```{r}
+
+optimize %>%
+  download_this(
+    output_name = "optimize",
+    output_extension = ".csv",
+    button_label = "Download data",
+    button_type = "warning",
+    has_icon = TRUE,
+    icon = "fa fa-save"
+  )
+
+```
 
 Thanks for checking out my web site!

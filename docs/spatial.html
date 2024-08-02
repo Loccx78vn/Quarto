@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>PRACTICE OF SUPPLY CHAIN MANAGEMENT - Spatial analyst</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
+<script src="site_libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
+<script src="site_libs/leaflet-binding-2.1.2/leaflet.js"></script>
+<link href="site_libs/leaflet-awesomemarkers-2.0.3/leaflet.awesome-markers.css" rel="stylesheet">
+<script src="site_libs/leaflet-awesomemarkers-2.0.3/leaflet.awesome-markers.min.js"></script>
+<link href="site_libs/fontawesome-4.7.0/font-awesome.min.css" rel="stylesheet">
+<script src="site_libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="site_libs/leaflet-providers-plugin-2.1.2/leaflet-providers-plugin.js"></script>
+<link href="site_libs/leaflet-markercluster-1.0.5/MarkerCluster.css" rel="stylesheet">
+<link href="site_libs/leaflet-markercluster-1.0.5/MarkerCluster.Default.css" rel="stylesheet">
+<script src="site_libs/leaflet-markercluster-1.0.5/leaflet.markercluster.js"></script>
+<script src="site_libs/leaflet-markercluster-1.0.5/leaflet.markercluster.freezable.js"></script>
+<script src="site_libs/leaflet-markercluster-1.0.5/leaflet.markercluster.layersupport.js"></script>
+<link href="site_libs/leaflet-easybutton-1.3.1/easy-button.css" rel="stylesheet">
+<script src="site_libs/leaflet-easybutton-1.3.1/easy-button.js"></script>
+<script src="site_libs/leaflet-easybutton-1.3.1/EasyButton-binding.js"></script>
+<link href="site_libs/ionicons-2.0.1/ionicons.min.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">PRACTICE OF SUPPLY CHAIN MANAGEMENT</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projects.html" rel="" target="">
+ <span class="menu-text">Logistics concepts</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./spatial.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Spatial analyst</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto tools-wide">
+    <a href="https://rpubs.com/loccx" rel="" title="Another projects" class="quarto-navigation-tool px-1" aria-label="Another projects"><i class="bi bi-rpubs"></i></a>
+    <a href="https://github.com/Loccx78vn/Website" rel="" title="Source code" class="quarto-navigation-tool px-1" aria-label="Source code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#spatial-analyst" id="toc-spatial-analyst" class="nav-link active" data-scroll-target="#spatial-analyst">Spatial analyst:</a>
+  <ul class="collapse">
+  <li><a href="#map-of-supply-chain-management" id="toc-map-of-supply-chain-management" class="nav-link" data-scroll-target="#map-of-supply-chain-management">Map of supply chain management</a></li>
+  </ul></li>
+  <li><a href="#routing-the-vehicles-path-for-supply-chain-plan" id="toc-routing-the-vehicles-path-for-supply-chain-plan" class="nav-link" data-scroll-target="#routing-the-vehicles-path-for-supply-chain-plan">Routing the vehicle’s path for Supply Chain Plan:</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References:</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Spatial analyst</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>So let’s pratice !!!</p>
+<section id="spatial-analyst" class="level2">
+<h2 class="anchored" data-anchor-id="spatial-analyst">Spatial analyst:</h2>
+<p>Now let’s start with data contains the information of longitude and latitude of customer’s locations. Member install data <a href="./index.html">optimize</a> before.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#New manufacter:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>new_manufacter<span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Customers =</span> <span class="fu">str_c</span>(<span class="fu">rep</span>(<span class="st">"Manufacter"</span>),<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Latitude =</span><span class="fu">c</span>(<span class="fl">21.12256201</span>,<span class="fl">21.68421</span>,<span class="fl">20.34250</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Longitude =</span> <span class="fu">c</span>(<span class="fl">105.9150683</span>,<span class="fl">105.1940</span>,<span class="fl">106.2946</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total.transactions =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Inventory =</span> <span class="fu">c</span>(<span class="dv">3000</span>,<span class="dv">2000</span>,<span class="dv">2500</span>))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>route<span class="ot">&lt;-</span><span class="fu">rbind</span>(new_manufacter,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>             optimize<span class="sc">%&gt;%</span> <span class="fu">select</span>(Customers,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                                Longitude,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                                Latitude,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                                Total.transactions) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>(<span class="at">Inventory =</span> <span class="fu">round</span>(<span class="fu">runif</span>(<span class="dv">50</span>,<span class="dv">100</span>,<span class="dv">400</span>)))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(route)[<span class="dv">4</span>]<span class="ot">&lt;-</span><span class="st">"Demand"</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>route<span class="sc">$</span>Node<span class="ot">&lt;-</span><span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(route)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Adding status:</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>route<span class="sc">$</span>Status <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(route<span class="sc">$</span>Inventory <span class="sc">-</span> route<span class="sc">$</span>Demand <span class="sc">&gt;</span> <span class="fu">round</span>(<span class="fu">mean</span>(route<span class="sc">$</span>Demand)<span class="sc">/</span><span class="dv">2</span>),<span class="st">"Control"</span>,<span class="fu">ifelse</span>(route<span class="sc">$</span>Inventory<span class="sc">-</span> route<span class="sc">$</span>Demand  <span class="sc">&gt;</span> <span class="dv">0</span>,<span class="st">"Warning"</span>,<span class="st">"Outstock"</span> ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>So we have enough data to pratice. Let show this data in map for clearly understading.</p>
+<section id="map-of-supply-chain-management" class="level3">
+<h3 class="anchored" data-anchor-id="map-of-supply-chain-management">Map of supply chain management</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Prepare labels:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>labels<span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"&lt;strong&gt; Customers &lt;/strong&gt; "</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>               route<span class="sc">$</span>Customers, <span class="st">"&lt;br/&gt; "</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>               <span class="st">"&lt;strong&gt; Inventory: &lt;/strong&gt; "</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>               route<span class="sc">$</span>Inventory, <span class="st">"&lt;br/&gt; "</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>               <span class="st">"&lt;strong&gt; Demand &lt;/strong&gt; "</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>               route<span class="sc">$</span>Demand, <span class="st">"&lt;br/&gt; "</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>               <span class="st">"&lt;strong&gt; Status &lt;/strong&gt; "</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>               route<span class="sc">$</span>Status, <span class="st">"&lt;br/&gt; "</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>         <span class="fu">lapply</span>(htmltools<span class="sc">::</span>HTML)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fontawesome) </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#If you don't have, try to install by: devtools::install_github("rstudio/fontawesome")</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>logos <span class="ot">&lt;-</span> <span class="fu">awesomeIconList</span>(</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Customer =</span> <span class="fu">makeAwesomeIcon</span>(</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">icon =</span> <span class="st">"home"</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">iconColor =</span> <span class="st">"white"</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">markerColor =</span> <span class="st">"blue"</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">library =</span> <span class="st">"fa"</span>),</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">Manufacter =</span> <span class="fu">makeAwesomeIcon</span>(</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">icon =</span> <span class="st">"beer"</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">iconColor =</span> <span class="st">"gold"</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">markerColor =</span> <span class="st">"black"</span>,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">library =</span> <span class="st">"fa"</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#Prepare the logos:</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>route<span class="sc">$</span>ticker<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"Manufacter"</span>,<span class="dv">3</span>),</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>                <span class="fu">rep</span>(<span class="st">"Customer"</span>,</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">nrow</span>(route)<span class="sc">-</span><span class="dv">3</span>))</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="fu">leaflet</span>(<span class="at">data =</span> route) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addAwesomeMarkers</span>(</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>             <span class="at">lng =</span> <span class="sc">~</span>Longitude, </span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>             <span class="at">lat =</span> <span class="sc">~</span>Latitude, </span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>             <span class="at">label =</span> <span class="sc">~</span>labels,</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>             <span class="at">icon =</span> <span class="sc">~</span>logos[ticker]) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lng =</span> <span class="fu">mean</span>(route<span class="sc">$</span>Longitude), </span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>          <span class="at">lat =</span> <span class="fu">mean</span>(route<span class="sc">$</span>Latitude),</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>          <span class="at">zoom =</span> <span class="dv">7</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d6085c9908474afce596" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-d6085c9908474afce596">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addAwesomeMarkers","args":[[21.12256201,21.68421,20.3425,21.2779313,21.1824792,21.0364947,21.004432,22.0680676,21.7026194,21.04508365,20.9430878,20.9904409,20.6951233,22.5055813,21.338316,22.7679781,21.592477,21.1392026,21.8567012,21.13962,20.863288,21.05445,20.960636,21.0318761,21.027,20.998438,20.8422929,22.835156,21.4252786,20.86481,21.309962,19.805476,20.947009,21.306157,20.942461,21.0151696,21.050886,21.186983,21.00732,20.852933,21.6316315,21.266963,21.124101,20.97911,22.8274313,22.2504445,20.9528365,21.3112496,21.52471,22.518908,20.8250835,20.996899,21.336126],[105.9150683,105.194,106.2946,106.1938814,106.0564275,106.7757939,107.278029,105.0349513,104.8714412,105.8905814,106.3225388,106.3273516,106.4788714,103.9604924,105.368077,105.9767319,105.8435398,105.5020099,106.4424353,105.84926,106.654356,105.780043,107.154986,105.8123032,105.899016,105.839445,106.7044886,106.524694,105.2311827,106.68345,105.594054,105.802777,106.346307,105.431946,107.110848,105.7776755,105.893851,105.782474,105.793246,106.703211,103.1692004,106.208003,105.998644,105.785615,104.9866145,105.70529,107.0800003,105.5930892,107.96619,103.938629,106.6550957,105.8306003,103.91069],{"icon":["beer","beer","beer","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home","home"],"markerColor":["black","black","black","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue"],"iconColor":["gold","gold","gold","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white","white"],"spin":false,"squareMarker":false,"iconRotate":0,"prefix":"fa"},null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,["<strong> Customers <\/strong> Manufacter1<br/> <strong> Inventory: <\/strong> 3000<br/> <strong> Demand <\/strong> 0<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> Manufacter2<br/> <strong> Inventory: <\/strong> 2000<br/> <strong> Demand <\/strong> 0<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> Manufacter3<br/> <strong> Inventory: <\/strong> 2500<br/> <strong> Demand <\/strong> 0<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337356<br/> <strong> Inventory: <\/strong> 108<br/> <strong> Demand <\/strong> 463<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337357<br/> <strong> Inventory: <\/strong> 219<br/> <strong> Demand <\/strong> 444<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337362<br/> <strong> Inventory: <\/strong> 307<br/> <strong> Demand <\/strong> 191<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337364<br/> <strong> Inventory: <\/strong> 111<br/> <strong> Demand <\/strong> 216<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337369<br/> <strong> Inventory: <\/strong> 260<br/> <strong> Demand <\/strong> 223<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337370<br/> <strong> Inventory: <\/strong> 336<br/> <strong> Demand <\/strong> 285<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337375<br/> <strong> Inventory: <\/strong> 111<br/> <strong> Demand <\/strong> 636<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337376<br/> <strong> Inventory: <\/strong> 263<br/> <strong> Demand <\/strong> 360<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337377<br/> <strong> Inventory: <\/strong> 336<br/> <strong> Demand <\/strong> 263<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337379<br/> <strong> Inventory: <\/strong> 394<br/> <strong> Demand <\/strong> 253<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337383<br/> <strong> Inventory: <\/strong> 274<br/> <strong> Demand <\/strong> 203<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337425<br/> <strong> Inventory: <\/strong> 139<br/> <strong> Demand <\/strong> 348<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337429<br/> <strong> Inventory: <\/strong> 127<br/> <strong> Demand <\/strong> 217<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337451<br/> <strong> Inventory: <\/strong> 315<br/> <strong> Demand <\/strong> 388<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337478<br/> <strong> Inventory: <\/strong> 315<br/> <strong> Demand <\/strong> 531<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337483<br/> <strong> Inventory: <\/strong> 391<br/> <strong> Demand <\/strong> 320<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337484<br/> <strong> Inventory: <\/strong> 363<br/> <strong> Demand <\/strong> 479<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337501<br/> <strong> Inventory: <\/strong> 376<br/> <strong> Demand <\/strong> 179<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337504<br/> <strong> Inventory: <\/strong> 332<br/> <strong> Demand <\/strong> 121<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337524<br/> <strong> Inventory: <\/strong> 171<br/> <strong> Demand <\/strong> 61<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337619<br/> <strong> Inventory: <\/strong> 157<br/> <strong> Demand <\/strong> 129<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337648<br/> <strong> Inventory: <\/strong> 204<br/> <strong> Demand <\/strong> 121<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337652<br/> <strong> Inventory: <\/strong> 199<br/> <strong> Demand <\/strong> 929<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337677<br/> <strong> Inventory: <\/strong> 326<br/> <strong> Demand <\/strong> 410<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337712<br/> <strong> Inventory: <\/strong> 369<br/> <strong> Demand <\/strong> 47<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337719<br/> <strong> Inventory: <\/strong> 118<br/> <strong> Demand <\/strong> 371<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337725<br/> <strong> Inventory: <\/strong> 321<br/> <strong> Demand <\/strong> 355<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337817<br/> <strong> Inventory: <\/strong> 336<br/> <strong> Demand <\/strong> 163<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337818<br/> <strong> Inventory: <\/strong> 247<br/> <strong> Demand <\/strong> 177<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337819<br/> <strong> Inventory: <\/strong> 172<br/> <strong> Demand <\/strong> 175<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337820<br/> <strong> Inventory: <\/strong> 100<br/> <strong> Demand <\/strong> 135<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337822<br/> <strong> Inventory: <\/strong> 273<br/> <strong> Demand <\/strong> 160<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337823<br/> <strong> Inventory: <\/strong> 366<br/> <strong> Demand <\/strong> 170<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337824<br/> <strong> Inventory: <\/strong> 313<br/> <strong> Demand <\/strong> 207<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337825<br/> <strong> Inventory: <\/strong> 111<br/> <strong> Demand <\/strong> 159<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337826<br/> <strong> Inventory: <\/strong> 330<br/> <strong> Demand <\/strong> 293<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337827<br/> <strong> Inventory: <\/strong> 345<br/> <strong> Demand <\/strong> 224<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337850<br/> <strong> Inventory: <\/strong> 142<br/> <strong> Demand <\/strong> 129<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337856<br/> <strong> Inventory: <\/strong> 377<br/> <strong> Demand <\/strong> 159<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337862<br/> <strong> Inventory: <\/strong> 177<br/> <strong> Demand <\/strong> 174<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337868<br/> <strong> Inventory: <\/strong> 238<br/> <strong> Demand <\/strong> 252<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337893<br/> <strong> Inventory: <\/strong> 266<br/> <strong> Demand <\/strong> 180<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337894<br/> <strong> Inventory: <\/strong> 262<br/> <strong> Demand <\/strong> 164<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337895<br/> <strong> Inventory: <\/strong> 185<br/> <strong> Demand <\/strong> 359<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337909<br/> <strong> Inventory: <\/strong> 200<br/> <strong> Demand <\/strong> 458<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337910<br/> <strong> Inventory: <\/strong> 185<br/> <strong> Demand <\/strong> 199<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337911<br/> <strong> Inventory: <\/strong> 306<br/> <strong> Demand <\/strong> 48<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337930<br/> <strong> Inventory: <\/strong> 363<br/> <strong> Demand <\/strong> 108<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337935<br/> <strong> Inventory: <\/strong> 114<br/> <strong> Demand <\/strong> 183<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337939<br/> <strong> Inventory: <\/strong> 179<br/> <strong> Demand <\/strong> 225<br/> <strong> Status <\/strong> Outstock<br/> "],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[19.805476,22.835156],"lng":[103.1692004,107.96619]},"setView":[[21.28882988981132,105.904228254717],7,[]]},"evals":[],"jsHooks":[]}</script>
+<p>The location of all customers and internal manufacters</p>
+</div>
+</div>
+<p>In the following code, I want to emphasize that the names of colors should have the first letter capitalized. For example, use “Red” instead of “red”.</p>
+<p>You might be wondering why this is important, and I had the same question :)). After some online research, I found a response to a similar question about changing the color of markers in R using Leaflet <a href="https://stackoverflow.com/questions/71726478/leaflet-change-color-of-markers-r">Leaflet change color of markers (R)</a>.</p>
+<p>It was mentioned that capitalizing the first letter allows R to color the markers based on different factors. If you don’t capitalize the first letter, R will color the markers randomly (I’m not sure why).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Setting the level of status</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>route<span class="sc">$</span>Status<span class="ot">&lt;-</span><span class="fu">fct_relevel</span>(route<span class="sc">$</span>Status,<span class="st">"Control"</span>,<span class="st">"Warning"</span>,<span class="st">"Outstock"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Prepare palette for labeling control/warning/outstock:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>palPwr <span class="ot">&lt;-</span> leaflet<span class="sc">::</span><span class="fu">colorFactor</span>(<span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"Lightgreen"</span>,<span class="st">"Yellow"</span>,<span class="st">"Red"</span>), </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                               <span class="at">domain =</span> route<span class="sc">$</span>Status,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                               <span class="at">ordered =</span> T)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#Prepare font for labeling</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>font<span class="ot">&lt;-</span><span class="fu">labelOptions</span>(<span class="at">noHide =</span> T, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">direction =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">style =</span> <span class="fu">list</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"font-family"</span> <span class="ot">=</span> <span class="st">"serif"</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"font-style"</span> <span class="ot">=</span> <span class="st">"ilatic"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"box-shadow"</span> <span class="ot">=</span> <span class="st">"3px 3px rgba(0,0,0,0.25)"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"font-size"</span> <span class="ot">=</span> <span class="st">"10px"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"border-color"</span> <span class="ot">=</span> <span class="st">"rgba(0,0,0,0.5)"</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>      ))</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot map with leaflet:</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet.extras)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'leaflet.extras' was built under R version 4.2.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leaflet</span>(<span class="at">data =</span> route) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addProviderTiles</span>(<span class="st">"CartoDB.Positron"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addCircleMarkers</span>(<span class="at">radius =</span> <span class="dv">10</span>, <span class="co"># size of the dots</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">fillOpacity =</span> .<span class="dv">7</span>, <span class="co"># alpha of the dots</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">stroke =</span> <span class="cn">FALSE</span>, <span class="co"># no outline</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">label =</span> <span class="sc">~</span>labels,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lng =</span> <span class="sc">~</span>Longitude, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lat =</span> <span class="sc">~</span>Latitude, </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">color =</span> <span class="sc">~</span><span class="fu">palPwr</span>(route<span class="sc">$</span>Status),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">clusterOptions =</span> <span class="fu">markerClusterOptions</span>(),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">labelOptions =</span> font) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  leaflet<span class="sc">::</span><span class="fu">addLegend</span>(<span class="at">position =</span> <span class="st">"bottomright"</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">values =</span> <span class="sc">~</span>Status, <span class="co"># data frame column for legend</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">opacity =</span> .<span class="dv">7</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">pal =</span> palPwr, <span class="co"># palette declared earlier</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">title =</span> <span class="st">"Status"</span>) <span class="sc">%&gt;%</span>   <span class="co"># legend titleƯ</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addResetMapButton</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-a855e390e85a4b0e7450" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-a855e390e85a4b0e7450">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["CartoDB.Positron",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addCircleMarkers","args":[[21.12256201,21.68421,20.3425,21.2779313,21.1824792,21.0364947,21.004432,22.0680676,21.7026194,21.04508365,20.9430878,20.9904409,20.6951233,22.5055813,21.338316,22.7679781,21.592477,21.1392026,21.8567012,21.13962,20.863288,21.05445,20.960636,21.0318761,21.027,20.998438,20.8422929,22.835156,21.4252786,20.86481,21.309962,19.805476,20.947009,21.306157,20.942461,21.0151696,21.050886,21.186983,21.00732,20.852933,21.6316315,21.266963,21.124101,20.97911,22.8274313,22.2504445,20.9528365,21.3112496,21.52471,22.518908,20.8250835,20.996899,21.336126],[105.9150683,105.194,106.2946,106.1938814,106.0564275,106.7757939,107.278029,105.0349513,104.8714412,105.8905814,106.3225388,106.3273516,106.4788714,103.9604924,105.368077,105.9767319,105.8435398,105.5020099,106.4424353,105.84926,106.654356,105.780043,107.154986,105.8123032,105.899016,105.839445,106.7044886,106.524694,105.2311827,106.68345,105.594054,105.802777,106.346307,105.431946,107.110848,105.7776755,105.893851,105.782474,105.793246,106.703211,103.1692004,106.208003,105.998644,105.785615,104.9866145,105.70529,107.0800003,105.5930892,107.96619,103.938629,106.6550957,105.8306003,103.91069],10,null,null,{"interactive":true,"className":"","stroke":false,"color":["#90EE90","#90EE90","#90EE90","#FF0000","#FF0000","#FFFF00","#FF0000","#FFFF00","#FFFF00","#FF0000","#FF0000","#FFFF00","#90EE90","#FFFF00","#FF0000","#FF0000","#FF0000","#FF0000","#FFFF00","#FF0000","#90EE90","#90EE90","#FFFF00","#FFFF00","#FFFF00","#FF0000","#FF0000","#90EE90","#FF0000","#FF0000","#90EE90","#FFFF00","#FF0000","#FF0000","#FFFF00","#90EE90","#FFFF00","#FF0000","#FFFF00","#FFFF00","#FFFF00","#90EE90","#FFFF00","#FF0000","#FFFF00","#FFFF00","#FF0000","#FF0000","#FF0000","#90EE90","#90EE90","#FF0000","#FF0000"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#90EE90","#90EE90","#90EE90","#FF0000","#FF0000","#FFFF00","#FF0000","#FFFF00","#FFFF00","#FF0000","#FF0000","#FFFF00","#90EE90","#FFFF00","#FF0000","#FF0000","#FF0000","#FF0000","#FFFF00","#FF0000","#90EE90","#90EE90","#FFFF00","#FFFF00","#FFFF00","#FF0000","#FF0000","#90EE90","#FF0000","#FF0000","#90EE90","#FFFF00","#FF0000","#FF0000","#FFFF00","#90EE90","#FFFF00","#FF0000","#FFFF00","#FFFF00","#FFFF00","#90EE90","#FFFF00","#FF0000","#FFFF00","#FFFF00","#FF0000","#FF0000","#FF0000","#90EE90","#90EE90","#FF0000","#FF0000"],"fillOpacity":0.7},{"showCoverageOnHover":true,"zoomToBoundsOnClick":true,"spiderfyOnMaxZoom":true,"removeOutsideVisibleBounds":true,"spiderLegPolylineOptions":{"weight":1.5,"color":"#222","opacity":0.5},"freezeAtZoom":false},null,null,null,["<strong> Customers <\/strong> Manufacter1<br/> <strong> Inventory: <\/strong> 3000<br/> <strong> Demand <\/strong> 0<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> Manufacter2<br/> <strong> Inventory: <\/strong> 2000<br/> <strong> Demand <\/strong> 0<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> Manufacter3<br/> <strong> Inventory: <\/strong> 2500<br/> <strong> Demand <\/strong> 0<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337356<br/> <strong> Inventory: <\/strong> 108<br/> <strong> Demand <\/strong> 463<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337357<br/> <strong> Inventory: <\/strong> 219<br/> <strong> Demand <\/strong> 444<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337362<br/> <strong> Inventory: <\/strong> 307<br/> <strong> Demand <\/strong> 191<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337364<br/> <strong> Inventory: <\/strong> 111<br/> <strong> Demand <\/strong> 216<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337369<br/> <strong> Inventory: <\/strong> 260<br/> <strong> Demand <\/strong> 223<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337370<br/> <strong> Inventory: <\/strong> 336<br/> <strong> Demand <\/strong> 285<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337375<br/> <strong> Inventory: <\/strong> 111<br/> <strong> Demand <\/strong> 636<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337376<br/> <strong> Inventory: <\/strong> 263<br/> <strong> Demand <\/strong> 360<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337377<br/> <strong> Inventory: <\/strong> 336<br/> <strong> Demand <\/strong> 263<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337379<br/> <strong> Inventory: <\/strong> 394<br/> <strong> Demand <\/strong> 253<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337383<br/> <strong> Inventory: <\/strong> 274<br/> <strong> Demand <\/strong> 203<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337425<br/> <strong> Inventory: <\/strong> 139<br/> <strong> Demand <\/strong> 348<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337429<br/> <strong> Inventory: <\/strong> 127<br/> <strong> Demand <\/strong> 217<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337451<br/> <strong> Inventory: <\/strong> 315<br/> <strong> Demand <\/strong> 388<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337478<br/> <strong> Inventory: <\/strong> 315<br/> <strong> Demand <\/strong> 531<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337483<br/> <strong> Inventory: <\/strong> 391<br/> <strong> Demand <\/strong> 320<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337484<br/> <strong> Inventory: <\/strong> 363<br/> <strong> Demand <\/strong> 479<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337501<br/> <strong> Inventory: <\/strong> 376<br/> <strong> Demand <\/strong> 179<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337504<br/> <strong> Inventory: <\/strong> 332<br/> <strong> Demand <\/strong> 121<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337524<br/> <strong> Inventory: <\/strong> 171<br/> <strong> Demand <\/strong> 61<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337619<br/> <strong> Inventory: <\/strong> 157<br/> <strong> Demand <\/strong> 129<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337648<br/> <strong> Inventory: <\/strong> 204<br/> <strong> Demand <\/strong> 121<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337652<br/> <strong> Inventory: <\/strong> 199<br/> <strong> Demand <\/strong> 929<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337677<br/> <strong> Inventory: <\/strong> 326<br/> <strong> Demand <\/strong> 410<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337712<br/> <strong> Inventory: <\/strong> 369<br/> <strong> Demand <\/strong> 47<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337719<br/> <strong> Inventory: <\/strong> 118<br/> <strong> Demand <\/strong> 371<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337725<br/> <strong> Inventory: <\/strong> 321<br/> <strong> Demand <\/strong> 355<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337817<br/> <strong> Inventory: <\/strong> 336<br/> <strong> Demand <\/strong> 163<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337818<br/> <strong> Inventory: <\/strong> 247<br/> <strong> Demand <\/strong> 177<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337819<br/> <strong> Inventory: <\/strong> 172<br/> <strong> Demand <\/strong> 175<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337820<br/> <strong> Inventory: <\/strong> 100<br/> <strong> Demand <\/strong> 135<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337822<br/> <strong> Inventory: <\/strong> 273<br/> <strong> Demand <\/strong> 160<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337823<br/> <strong> Inventory: <\/strong> 366<br/> <strong> Demand <\/strong> 170<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337824<br/> <strong> Inventory: <\/strong> 313<br/> <strong> Demand <\/strong> 207<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337825<br/> <strong> Inventory: <\/strong> 111<br/> <strong> Demand <\/strong> 159<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337826<br/> <strong> Inventory: <\/strong> 330<br/> <strong> Demand <\/strong> 293<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337827<br/> <strong> Inventory: <\/strong> 345<br/> <strong> Demand <\/strong> 224<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337850<br/> <strong> Inventory: <\/strong> 142<br/> <strong> Demand <\/strong> 129<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337856<br/> <strong> Inventory: <\/strong> 377<br/> <strong> Demand <\/strong> 159<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337862<br/> <strong> Inventory: <\/strong> 177<br/> <strong> Demand <\/strong> 174<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337868<br/> <strong> Inventory: <\/strong> 238<br/> <strong> Demand <\/strong> 252<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337893<br/> <strong> Inventory: <\/strong> 266<br/> <strong> Demand <\/strong> 180<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337894<br/> <strong> Inventory: <\/strong> 262<br/> <strong> Demand <\/strong> 164<br/> <strong> Status <\/strong> Warning<br/> ","<strong> Customers <\/strong> 337895<br/> <strong> Inventory: <\/strong> 185<br/> <strong> Demand <\/strong> 359<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337909<br/> <strong> Inventory: <\/strong> 200<br/> <strong> Demand <\/strong> 458<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337910<br/> <strong> Inventory: <\/strong> 185<br/> <strong> Demand <\/strong> 199<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337911<br/> <strong> Inventory: <\/strong> 306<br/> <strong> Demand <\/strong> 48<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337930<br/> <strong> Inventory: <\/strong> 363<br/> <strong> Demand <\/strong> 108<br/> <strong> Status <\/strong> Control<br/> ","<strong> Customers <\/strong> 337935<br/> <strong> Inventory: <\/strong> 114<br/> <strong> Demand <\/strong> 183<br/> <strong> Status <\/strong> Outstock<br/> ","<strong> Customers <\/strong> 337939<br/> <strong> Inventory: <\/strong> 179<br/> <strong> Demand <\/strong> 225<br/> <strong> Status <\/strong> Outstock<br/> "],{"interactive":false,"permanent":true,"direction":"bottom","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"style":{"font-family":"serif","font-style":"ilatic","box-shadow":"3px 3px rgba(0,0,0,0.25)","font-size":"10px","border-color":"rgba(0,0,0,0.5)"},"className":"","sticky":true},null]},{"method":"addLegend","args":[{"colors":["#90EE90","#FFFF00","#FF0000"],"labels":["Control","Warning","Outstock"],"na_color":null,"na_label":"NA","opacity":0.7,"position":"bottomright","type":"factor","title":"Status","extra":null,"layerId":null,"className":"info legend","group":null}]},{"method":"addEasyButton","args":[{"icon":"ion-arrow-shrink","title":"Reset View","onClick":"function(btn, map){ map.setView(map._initialCenter, map._initialZoom); }","position":"topleft"}]}],"limits":{"lat":[19.805476,22.835156],"lng":[103.1692004,107.96619]}},"evals":["calls.3.args.0.onClick"],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (function(el, x){ var map = this; map._initialCenter = map.getCenter(); map._initialZoom = map.getZoom();}).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
+<p>The mini map by clustering the locations</p>
+</div>
+</div>
+<p>Also for adjusting the base map, you can base on the preview of base map in <a href="https://leaflet-extras.github.io/leaflet-providers/preview/">Leaflet preview</a> and copy the name of provider to paste in the argument {addProviderTitles}. For instance, I use provider = <code>CartoDB.Positron</code>.</p>
+</section>
+</section>
+<section id="routing-the-vehicles-path-for-supply-chain-plan" class="level2">
+<h2 class="anchored" data-anchor-id="routing-the-vehicles-path-for-supply-chain-plan">Routing the vehicle’s path for Supply Chain Plan:</h2>
+<p>To set up the connection between RStudio and GitHub, you can use the <code>source()</code> function and assign the URL link of the GitHub repository that contains the R script you need. Remember to click on “Raw” to move to another page and then copy that URL.</p>
+<p>I found the original code in Viktor Plamenov’s project on <a href="https://gitlab.com/vikplamenov/vrpoptima/-/tree/main/R?ref_type=heads">GitLab</a>. I found it convenient to use, so I copied and uploaded it to my private GitHub repository. You can use this URL for your work.</p>
+<p>The author created the package {vrpoptima} for easily install and using it. You can install by package {remote}, another details you can read in this link <a href="https://remotes.r-lib.org/reference/install_gitlab.html">remotes</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vrpoptima)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(optimize)[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>]<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"lat"</span>,<span class="st">"lon"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(new_manufacter)[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>]<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"lat"</span>,<span class="st">"lon"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>mat_optimize<span class="ot">&lt;-</span><span class="fu">as.matrix</span>(optimize[,<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>])</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>dist_optimize<span class="ot">&lt;-</span><span class="fu">as.matrix</span>(geodist<span class="sc">::</span><span class="fu">geodist</span>(mat_optimize,<span class="at">measure =</span> <span class="st">'haversine'</span>)<span class="sc">/</span><span class="dv">1000</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>mat_WH<span class="ot">&lt;-</span><span class="fu">as.matrix</span>(new_manufacter[,<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, just simply add the criteria and run the code illustrated below.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$routes
+          Visit_0 Visit_1 Visit_2 Visit_3 Visit_4 Visit_5 Visit_6 Visit_7
+Vehicle_1       1       9      27      37      24      48      18      30
+Vehicle_2       2      26      12      35      17      40       3      44
+Vehicle_3       3      29      41      33      19      15      31      14
+          Visit_8 Visit_9 Visit_10 Visit_11 Visit_12 Visit_13 Visit_14 Visit_15
+Vehicle_1       8      22       23       49       36       50       38       47
+Vehicle_2      32      20        4       46       25       13       42        5
+Vehicle_3      43      16        1       39        2       34       21        7
+          Visit_16 Visit_17 Visit_18 Visit_19 Visit_20 Visit_21
+Vehicle_1       11        6       45       28        1       NA
+Vehicle_2        2       NA       NA       NA       NA       NA
+Vehicle_3       10        3       NA       NA       NA       NA
+
+$max_distance
+[1] 859.1384
+
+$dist_history
+   [1] 2157.0102 2019.8126 2019.8126 1993.6344 1962.7287 1929.4141 1929.4141
+   [8] 1838.2808 1838.2808 1838.2808 1829.7096 1829.7096 1820.7964 1792.3697
+  [15] 1792.3697 1789.3234 1779.1908 1779.1908 1768.4646 1768.4646 1695.6682
+  [22] 1695.6682 1695.6682 1691.3768 1688.8695 1573.9464 1526.4847 1526.4847
+  [29] 1526.4847 1526.4847 1524.2393 1524.2393 1511.3719 1511.3719 1511.3719
+  [36] 1511.3719 1511.3719 1506.9532 1506.9532 1506.9532 1476.2815 1476.2815
+  [43] 1476.2815 1461.1313 1461.1313 1461.1313 1461.1313 1454.0843 1426.1140
+  [50] 1426.1140 1407.0913 1407.0913 1403.3359 1403.3359 1403.3359 1402.8698
+  [57] 1400.5365 1400.5365 1400.5365 1400.5365 1400.5365 1400.5365 1336.9537
+  [64] 1336.9537 1336.5818 1336.5818 1332.9991 1332.9991 1332.9991 1332.9991
+  [71] 1332.9991 1305.5091 1305.5091 1305.5091 1293.7938 1293.7938 1293.7938
+  [78] 1293.5113 1293.5113 1293.5113 1293.5113 1293.5113 1289.1817 1289.1817
+  [85] 1289.1817 1289.0453 1288.0207 1288.0207 1288.0207 1288.0207 1288.0207
+  [92] 1287.5702 1287.5702 1287.5702 1287.5702 1287.5702 1284.4084 1284.4084
+  [99] 1272.1119 1267.3489 1267.3489 1267.3489 1267.3489 1260.7566 1260.7566
+ [106] 1260.7566 1260.7566 1260.7566 1260.7566 1260.7566 1252.7571 1252.2824
+ [113] 1252.2824 1252.2824 1252.2824 1249.5125 1249.5125 1248.2594 1248.2594
+ [120] 1248.2594 1248.2594 1159.9196 1159.9196 1159.9196 1158.9226 1141.3769
+ [127] 1141.3769 1141.3769 1133.7011 1133.7011 1133.7011 1132.6252 1132.6252
+ [134] 1129.1544 1129.1544 1129.1544 1129.1544 1129.1544 1129.1544 1129.1544
+ [141] 1129.1544 1129.1544 1129.1544 1129.1544 1122.1943 1122.1943 1122.1943
+ [148] 1122.1943 1118.9316 1118.9316 1110.5421 1110.5421 1106.5385 1106.5385
+ [155] 1106.5385 1106.5385 1106.5385 1106.5385 1106.5385 1106.5385 1101.9891
+ [162] 1101.9891 1101.9891 1101.9891 1097.4732 1097.4732 1097.4732 1097.4732
+ [169] 1097.4732 1097.4732 1097.4732 1097.4732 1097.4732 1094.5156 1094.5156
+ [176] 1094.5156 1094.5156 1094.5156 1094.5156 1094.5156 1094.5156 1094.5156
+ [183] 1094.5156 1094.5156 1094.5156 1088.5980 1088.5980 1088.5980 1023.0246
+ [190] 1023.0246 1023.0246 1023.0246 1023.0246 1023.0246 1023.0246 1023.0246
+ [197] 1020.9148 1020.9148 1020.9148 1020.9148 1020.9148 1020.9148 1020.9148
+ [204] 1020.9148 1020.9148 1020.9148 1020.9148 1020.1796 1020.1796 1020.1796
+ [211] 1019.8530 1014.2421 1014.2421 1010.2909 1010.2909 1010.2909 1010.2909
+ [218] 1003.2305 1003.2305 1003.2305 1003.2305 1003.2305 1003.2305 1003.2305
+ [225] 1003.2305 1003.2305 1003.2305 1003.2305 1003.2305 1003.2305  999.4814
+ [232]  999.4814  999.4814  999.4814  999.4814  999.4814  999.4814  999.4814
+ [239]  999.4814  999.4814  999.4814  999.4814  995.5133  995.5133  995.5133
+ [246]  995.5133  995.5133  995.5133  995.5133  995.5133  995.5133  995.5133
+ [253]  988.9405  988.9405  988.9405  988.9405  988.9405  988.9405  988.9405
+ [260]  988.9405  988.9405  988.9405  988.9405  988.9405  988.9405  988.6217
+ [267]  988.6217  988.6217  988.6217  988.6217  988.6217  988.6217  988.6217
+ [274]  988.6217  988.6217  988.6217  973.7638  973.7638  973.7638  973.7638
+ [281]  973.7638  973.7638  973.7638  973.7638  973.7638  973.7638  973.7638
+ [288]  973.7638  973.5686  973.5686  973.5686  967.6367  967.6367  967.6367
+ [295]  967.6367  967.6367  967.6367  967.6367  967.6367  967.6367  967.1687
+ [302]  967.1687  967.1687  967.1687  967.1687  967.1687  965.2506  965.2506
+ [309]  965.2506  952.3005  952.3005  952.3005  952.3005  952.3005  952.3005
+ [316]  949.9239  949.9239  936.2193  936.2193  936.2193  933.7378  933.7378
+ [323]  933.7378  933.7378  929.3341  929.3341  929.3341  929.3341  929.3341
+ [330]  929.3341  929.3341  929.3341  929.3341  929.3341  929.3341  929.3341
+ [337]  929.3341  919.5941  919.5941  919.5941  919.5941  919.5941  919.5941
+ [344]  919.5941  919.5941  919.5941  919.5941  919.5941  919.5941  919.5941
+ [351]  919.5941  919.5941  919.5941  918.8515  918.8515  918.8515  918.8515
+ [358]  918.8515  918.8515  918.8515  903.6400  903.6400  903.6400  902.2651
+ [365]  902.2651  902.2651  902.2651  902.2651  902.2651  902.2651  902.2651
+ [372]  902.2651  902.2651  902.2651  902.2651  902.2651  902.2651  902.2651
+ [379]  901.8053  901.8053  901.8053  901.8053  901.8053  901.8053  901.8053
+ [386]  901.8053  901.8053  901.8053  900.7952  900.7952  900.7952  900.7952
+ [393]  900.7952  900.7952  900.7952  900.7952  900.7952  900.7952  900.7952
+ [400]  900.7952  900.7952  900.7952  900.7952  900.7952  900.7952  900.7952
+ [407]  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420
+ [414]  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420
+ [421]  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420
+ [428]  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420
+ [435]  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420
+ [442]  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420
+ [449]  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420
+ [456]  898.1420  898.1420  898.1420  898.1420  898.1420  898.1420  880.0303
+ [463]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [470]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [477]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [484]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [491]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [498]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [505]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [512]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [519]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [526]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [533]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [540]  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303  880.0303
+ [547]  880.0303  880.0303  880.0303  880.0303  880.0303  876.8357  876.8357
+ [554]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [561]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [568]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [575]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [582]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [589]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [596]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [603]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [610]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [617]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [624]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [631]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [638]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [645]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [652]  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357  876.8357
+ [659]  876.4823  876.4823  876.4823  876.4823  876.4823  876.4823  876.4823
+ [666]  876.4823  876.4823  876.2715  876.2715  876.2715  876.2715  876.2715
+ [673]  876.2715  876.2715  876.2715  876.2715  876.2715  876.2715  876.2715
+ [680]  876.2715  876.2715  876.2715  876.2715  876.2715  876.2715  876.2715
+ [687]  876.2715  876.2715  876.2715  876.2715  876.2715  876.2715  869.4151
+ [694]  869.4151  869.4151  869.4151  869.4151  869.4151  869.3025  869.3025
+ [701]  869.3025  869.3025  869.3025  869.3025  869.3025  869.3025  869.3025
+ [708]  869.3025  869.3025  869.3025  869.3025  869.3025  869.3025  869.3025
+ [715]  869.3025  869.3025  869.3025  869.3025  869.3025  869.3025  869.3025
+ [722]  869.3025  869.3025  868.9277  868.9277  868.9277  868.9277  868.9277
+ [729]  867.3143  867.3143  867.3143  867.3143  867.3143  867.3143  867.3143
+ [736]  867.3143  867.3143  867.3143  867.3143  867.3143  867.3143  867.3143
+ [743]  867.3143  867.3143  867.3143  867.3143  867.3143  867.3143  867.3143
+ [750]  867.2557  867.2557  867.2557  867.2557  867.2557  867.2557  867.2557
+ [757]  867.2557  867.2557  867.2557  867.2557  861.6750  861.6750  861.6750
+ [764]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [771]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [778]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [785]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [792]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [799]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [806]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [813]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [820]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [827]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [834]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [841]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [848]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [855]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [862]  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750  861.6750
+ [869]  861.6750  861.6750  861.6750  861.6750  861.6750  861.4012  861.4012
+ [876]  861.4012  861.4012  861.4012  861.4012  861.4012  861.4012  861.4012
+ [883]  861.4012  861.4012  861.4012  861.4012  861.4012  861.4012  861.4012
+ [890]  861.4012  861.4012  861.4012  861.4012  861.4012  861.4012  861.4012
+ [897]  861.4012  861.4012  861.4012  861.4012  861.4012  861.4012  861.4012
+ [904]  861.4012  861.4012  861.4012  859.6236  859.6236  859.6236  859.6236
+ [911]  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236
+ [918]  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236
+ [925]  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236
+ [932]  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236
+ [939]  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236
+ [946]  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236
+ [953]  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236
+ [960]  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236
+ [967]  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236  859.6236
+ [974]  859.1384  859.1384  859.1384  859.1384  859.1384  859.1384  859.1384
+ [981]  859.1384  859.1384  859.1384  859.1384  859.1384  859.1384  859.1384
+ [988]  859.1384  859.1384  859.1384  859.1384  859.1384  859.1384  859.1384
+ [995]  859.1384  859.1384  859.1384  859.1384  859.1384  859.1384
+
+$tour_lengths
+[1] 867.1374 842.1410 729.5229</code></pre>
+</div>
+</div>
+<p>Finally, plot the results of optimization by two functions: * <code>PlotToursCombined</code> function: use to display of the combined routes created with the genetic program * <code>PlotToursIndividual</code> function: use to display of the individual routes created with the genetic program.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot the results:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>routes <span class="ot">&lt;-</span> solution<span class="sc">$</span>routes</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(routes) <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(routes)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>routes_list <span class="ot">=</span> <span class="fu">RoutesDataPrep</span>(<span class="at">routes =</span> solution<span class="sc">$</span>routes, </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                             <span class="at">visit_points =</span> mat_optimize, </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                             <span class="at">agent_points =</span> <span class="fu">as.matrix</span>(new_manufacter[,<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>]))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Display all routes at the same time</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">PlotToursCombined</span>(<span class="at">solution =</span> solution, </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">routes_list =</span> routes_list,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">agent_locations =</span> <span class="fu">as.matrix</span>(new_manufacter[,<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>]),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">orientation =</span> <span class="st">"vertical"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display all the inidividual routes on a single figure block</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">PlotToursIndividual</span>(<span class="at">solution =</span> solution, </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">routes_list =</span> routes_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="references" class="level1">
+<h1>References:</h1>
+<p>Thanks to all authors of documentaions below that help me complete this pratice.</p>
+<ul>
+<li><p><a href="https://www.jla-data.net/eng/leaflet-in-r-tips-and-tricks/">leaflet</a> by Jindra Lacko.</p></li>
+<li><p><a href="https://rfortherestofus.com/2021/02/how-to-use-git-github-with-r">How to Use Git/GitHub with R</a> by David Keyes.</p></li>
+<li><p><a href="https://gitlab.com/vikplamenov/vrpoptima/-/blob/main/R/VehicleRouting.R?ref_type=heads">Multiple Depot in VRP</a> by Viktor Plamenov.</p></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">© Copyright 2023, Loc cao</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">Built with <a href="https://quarto.org/">Quarto</a></div>
+  </div>
+</footer>
+
+
+
+</body></html>

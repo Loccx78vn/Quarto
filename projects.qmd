@@ -1,9 +1,248 @@
 ---
-title: "Projects"
+title: "Logistics concepts"
 ---
 
-## Project 1
+So let's pratice !!!
 
-## Project 2
+I will copy the original dataset to other object. I think it's a good habit because sometime you code wrong leading to wrong result and you want to run again but the previous object have changed to new one so you should import the data again. It's not smooth.
 
-## Project 3
+Adjusting to the standardize form to suitalbe for coding in R. Remember **df** have a column refer to datetime class, you should divide into 2 cols: date and time cols separately. You should download this data [procurement_data](index.qmd) before.
+
+```{r}
+#| include: false
+library(readxl)
+procurement_data <- read_excel(r"(C:/Users/locca/Documents/Xuân Lộc/VILAS/Data_Chuong 7/procurement_data.xlsx)")
+
+## Call packages:
+pacman::p_load(rio,
+               here,
+               janitor,
+               tidyverse,
+               dplyr,
+               magrittr,
+               ggplot2,
+               purrr,
+               lubridate,
+               knitr,
+               shiny)
+```
+
+```{r}
+## Copy into new object:
+df<-procurement_data 
+
+## Adjusting:
+df<-df %>% 
+  # standardize column name syntax
+    janitor::clean_names() %>% 
+    distinct() 
+
+df <- df %>% 
+  # break the datetime PO into date and time cols separately
+    mutate(po_date = as.Date(df$po_date_time),
+           po_time = hms(format(df$po_date_time,"%H:%M:%S")))
+
+df$money<-runif(nrow(df),1000,10000)
+```
+
+## ABC analyst:
+
+In supply chain management, you typically encounter the task of ABC analysis to classify your major customers by comparing their revenue or purchase frequency. Next, I select the vendor's name and the amount of the purchase order and present it.
+
+```{r}
+m<-df %>% 
+  select(c(vendor_name,po_amount)) %>% 
+  group_by(vendor_name) %>% 
+  summarise(sum = sum(po_amount)) %>% 
+  ungroup()
+
+m<-within(m, {
+    cum_per <- cumsum(rev(sort(sum)))/sum(sum)
+    group <- ifelse(cum_per > 0.91, "A",
+           ifelse(cum_per < 0.81, "B", "C"))
+})
+
+```
+
+Now we have classified all the companies on our list, but we need to be prepared for any future collaborations. When considering collab with a new company, we will need to know which classification it falls under in order to decide whether to sign a long-term contract. In this section, I'd like to introduce the Random Forests method, a machine learning algorithm that combines the outputs of multiple decision trees to produce a single result. For more details, you can refer to this page: [Random Forest](https://www.gormanalysis.com/blog/decision-trees-in-r-using-rpart/)
+
+In R, we can easily implement this using the following code. It's important to note a few things:
+
+-   The rpart function has default parameters that can limit the growth of the tree, so we should consider adjusting them. For example:
+    -   The argument "minsplit" represents the minimum number of observations required in a node for a split to be attempted.
+
+    -   The argument "minbucket" represents the minimum number of observations in any terminal node. We should observe the impact of overriding these parameters.
+-   Package {parttree} maybe not avaliable in your Rstudio version. You can update your version or directly install from online source by function `remote::install_github("https://github.com/grantmcdermott/parttree")`
+
+```{r}
+#| warning: false
+#| fig-cap: "The cluster of customer group based on the total PO amount"
+df1<-left_join(m %>% select(c(vendor_name, group)),
+               df,
+               by = "vendor_name")
+
+library(rpart)
+library(parttree)
+tree<-rpart(po_amount ~ po_saving_amount + money, data = df1)
+
+ggplot(data = df1,
+       aes(x = po_saving_amount,
+           y = money))+
+  geom_parttree(data = tree,
+                aes(fill = po_amount),
+                alpha = 0.3)+
+  geom_point(aes(col = po_amount))+
+  theme_minimal() +
+  scale_fill_distiller(
+    limits = range(df1$po_amount, na.rm = TRUE), 
+    aesthetics = c('colour', 'fill')
+  )
+
+```
+
+## Reactable table:
+
+But look again your output, the table is boring and the name of columns is abbreviation so it perhaps lead to viewer's misunderstanding. In order to familier with reader, R have package {reactable} help us to implement beautiful interactive dashboard.
+
+So before implementing, I will build a function to add reactivity in dashboard, which's similar with us that is filter button. I get this code from [Albert Rapp](https://albert-rapp.de/posts/18_connecting_reactable_ojs/18_connecting_reactable_ojs) and I think you gonna love his education posts about technical field.
+
+```{r}
+filter_fct <- function(values, name) {
+  tags$select(
+    tags$option(value = "", "All"),
+    purrr::map(unique(values), tags$option),
+    onchange = glue::glue(
+      "Reactable.setFilter(
+        'my-tbl', 
+        '{name}', 
+        event.target.value  // This is the value of the dropdown menu
+      )"
+    )
+  )
+}
+```
+
+```{r}
+#| warning: false
+
+library(reactable)
+library(sparkline)
+library(htmltools)
+reactable(
+  df %>% select(tran_status,
+                po_amount,
+                po_number,
+                money) %>% 
+    mutate(p = money/po_amount),
+  filterable = TRUE, 
+  minRows = 10,
+  searchable = TRUE,
+  compact = TRUE,
+  paginationType = "jump",    #"jump" to show a page jump
+  showPageSizeOptions = TRUE, 
+  defaultPageSize = 20,
+  columns = list(
+    po_number = colDef(name = "Number of PO",
+                       filterInput = filter_fct),
+    tran_status = colDef(name = "Status of transaction",
+                         footer = "Total",
+                         cell = function(value) {
+    if (value == "Fully Billed") "\u2714\ufe0f Yes" 
+        
+      else if (value == "Pending Bill"|value =="Pending Receipt"|value =="Closed") browsable(div(shiny::icon('warning', 
+                                     class = 'fas',  
+                                     style = 'color: orange'),"Warning"))  else  "\u274c No"}),
+    money = colDef(name = "Total amount",
+                   aggregate = "sum", 
+                   format = colFormat(currency = "USD")),
+    po_amount = colDef(name = "Quantity of PO",
+                       aggregate = "sum"),
+    p = colDef(name = "Percentage",
+               aggregate = "mean")
+  )
+)
+```
+
+```{r}
+library(ggiraph)
+p1<-df %>% 
+  mutate(tooltip_label = glue::glue('The total quantity PO is {po_amount}<br> with value is {round(money,2)}')) %>%
+  ggplot(aes(x = po_amount,
+              y = money,
+              col = tran_status)) +
+  geom_point_interactive(size = 4,
+                         aes(tooltip = tooltip_label)) +
+  theme_minimal()
+
+girafe(ggobj = p1,
+       options = list(
+         
+         opts_hover(css = ''),
+         opts_hover_inv(css = "opacity:0.1;"),
+         opts_sizing(rescale = FALSE) 
+         ),
+         height_svg = 6,
+         width_svg = 8
+       )
+```
+
+```{r,warning=F}
+library(lubridate)
+library(ggiraph)
+df<-df %>% 
+  mutate(
+    receiving_department = as.factor(receiving_department),
+    id = levels(receiving_department)[as.numeric(receiving_department)],
+         receiving_department = forcats::fct_reorder(receiving_department, po_amount)
+)
+
+p1<-df %>% 
+  mutate(Month = as.Date(paste(month(po_date),"01",year(po_date),sep = "/"),format = "%m/%d/%Y")) %>%
+  group_by(Month,receiving_department,id) %>% 
+  summarise(mean = mean(money)) %>% 
+  ggplot(aes(y = mean, 
+             x = Month,
+             col = receiving_department,
+             data_id = id))+
+    geom_line_interactive(linewidth = 2.5) +
+    geom_point_interactive(size = 4) +
+  labs(
+    x = "Month",
+    y = "The total revenue",
+    title = "The line chart of revenue monthly"
+  )+
+  theme(
+    text = element_text(
+      color = 'grey20'
+    ),
+    legend.position = 'none',
+    panel.grid.minor = element_blank(),
+    plot.title.position = 'plot'
+  ) 
+
+p2<-df %>% 
+  ggplot(aes(x = money, 
+             y = receiving_department, 
+             fill = receiving_department,
+             data_id = id))+
+    geom_boxplot_interactive(position = position_nudge(y = 0.25),
+                             width = 0.5)+
+    labs(
+    x = "The total revenue",
+    y = element_blank(),
+    title = "The KPI achieved by receiving_department")
+
+library(patchwork)
+girafe(ggobj = p1/p2 + plot_spacer() + plot_layout(widths = c(0.45, 0.1, 0.45)),
+       options = list(
+         
+         opts_hover(css = ''),
+         opts_hover_inv(css = "opacity:0.1;"),
+         opts_sizing(rescale = FALSE) 
+         ),
+         height_svg = 6,
+         width_svg = 10
+       )
+```
+
+Next we will move to the next section is about: [Spatial analyst](Spatial_analyst.qmd)

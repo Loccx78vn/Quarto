@@ -3,25 +3,29 @@ project:
   output-dir: docs
   
 website:
-  title: "MY WEB SITE"
-  navbar:
+  title: "PRACTICE OF SUPPLY CHAIN MANAGEMENT"
+  navbar: 
     left:
       - href: index.qmd
         text: Home
-      - projects.qmd
+      - href: projects.qmd
+      - href: spatial.qmd
     tools:
-      - icon: twitter
-        href: https://twitter.com/
+      - icon: rpubs
+        text: Another projects
+        href: https://rpubs.com/loccx
       - icon: github
-        href: https://github.com/YOURUSERNAME/YOURREPO
+        text: Source code
+        href: https://github.com/Loccx78vn/Website
   page-footer:
     right: "Built with [Quarto](https://quarto.org/)"
-    left: "&copy; Copyright 2023, YOUR NAME"
+    left: "&copy; Copyright 2023, Loc cao"
 
 format:
   html:
-    theme: cerulean
+    theme: 
+      light: flatly
+      dark: darkly
     toc: true
 
 editor: source
-
