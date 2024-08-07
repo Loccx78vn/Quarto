@@ -211,8 +211,10 @@ Next, just simply add the criteria and run the code illustrated below.
 ```
 
 Finally, plot the results of optimization by two functions:
-* `PlotToursCombined` function: use to display of the combined routes created with the genetic program 
-* `PlotToursIndividual` function: use to display of the individual routes created with the genetic program.
+
+  * `PlotToursCombined` function: use to display of the combined routes created with the genetic program.
+  
+  * `PlotToursIndividual` function: use to display of the individual routes created with the genetic program.
 
 ```{r}
 #Plot the results:
