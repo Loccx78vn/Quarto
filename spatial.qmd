@@ -252,5 +252,5 @@ Thanks to all authors of documentaions below that help me complete this pratice.
 
 * [Dataui](https://timelyportfolio.github.io/dataui/articles/dataui_reactable.html)
 
-*[htmltools with R](https://3mw.albert-rapp.de/) by Albert Rapp.
+* [htmltools with R](https://3mw.albert-rapp.de/) by Albert Rapp.
 
