@@ -1,5 +1,9 @@
 ---
 title: "Spatial analyst"
+format: 
+  html:
+    code-fold: true
+    code-tools: true
 ---
 
 So let's pratice !!!
@@ -245,3 +249,8 @@ Thanks to all authors of documentaions below that help me complete this pratice.
 * [How to Use Git/GitHub with R](https://rfortherestofus.com/2021/02/how-to-use-git-github-with-r) by David Keyes.
 
 * [Multiple Depot in VRP](https://gitlab.com/vikplamenov/vrpoptima/-/blob/main/R/VehicleRouting.R?ref_type=heads) by Viktor Plamenov.
+
+* [Dataui](https://timelyportfolio.github.io/dataui/articles/dataui_reactable.html)
+
+*[htmltools with R](https://3mw.albert-rapp.de/) by Albert Rapp.
+

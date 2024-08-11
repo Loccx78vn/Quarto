@@ -1,12 +1,16 @@
 ---
-title: "Logistics concepts"
+title: "ABC analyst concepts"
+format: 
+  html:
+    code-fold: true
+    code-tools: true
 ---
 
 So let's pratice !!!
 
-I will copy the original dataset to other object. I think it's a good habit because sometime you code wrong leading to wrong result and you want to run again but the previous object have changed to new one so you should import the data again. It's not smooth.
+Firstly, I will copy the original dataset to other object. I think it's a good habit because sometime you code wrong leading to wrong result and you want to run again but the previous object is changed to new one and you have to import the data again. It's not smooth.
 
-Adjusting to the standardize form to suitalbe for coding in R. Remember **df** have a column refer to datetime class, you should divide into 2 cols: date and time cols separately. You should download this data [procurement_data](index.qmd) before.
+So adjusting the data to standardize form to suitable for coding in R. Remember **df** have a column refer to datetime class, you should divide into 2 cols: date and time cols separately. You should download this data [procurement_data](index.qmd) before.
 
 ```{r}
 #| include: false
@@ -47,21 +51,93 @@ df$money<-runif(nrow(df),1000,10000)
 
 ## ABC analyst:
 
-In supply chain management, you typically encounter the task of ABC analysis to classify your major customers by comparing their revenue or purchase frequency. Next, I select the vendor's name and the amount of the purchase order and present it.
+  In supply chain management, you typically faces the task of ABC analysis to classify your major customers by comparing their revenue or purchase frequency. So to impelemnt this task, I create a data contains the vendor's name and the total revenue caculated by the amount of PO sign the total value of PO.
+
+  In R, we have package `{ABCanalysis}` to encounter this task by simply one function: `ABCanalysis` showed below.
 
 ```{r}
-m<-df %>% 
-  select(c(vendor_name,po_amount)) %>% 
+#| warning: false
+#| message: false  
+# Sum total PO of each vendor:
+ABC<-df %>% 
   group_by(vendor_name) %>% 
-  summarise(sum = sum(po_amount)) %>% 
-  ungroup()
+  summarise(revenue = round(sum(po_amount * money)/10^3,0))
 
-m<-within(m, {
-    cum_per <- cumsum(rev(sort(sum)))/sum(sum)
-    group <- ifelse(cum_per > 0.91, "A",
-           ifelse(cum_per < 0.81, "B", "C"))
-})
+library(ABCanalysis)
+abc = ABCanalysis(ABC$revenue,PlotIt=TRUE)
 
+setA = ABC$revenue[abc$Aind]
+setB = ABC$revenue[abc$Bind]
+setC = ABC$revenue[abc$Cind]
+
+abc.df<-cbind(c(setA,setB,setC),
+              c(rep("A",length(setA)),
+                rep("B",length(setB)),
+                rep("C",length(setC)))
+) %>% 
+  as.data.frame() 
+
+colnames(abc.df)<-c("revenue","group")
+
+abc.df$revenue<-as.numeric(abc.df$revenue)
+
+ABC<-left_join(abc.df,
+               ABC,
+               by = "revenue")
+```
+  Although it's result is accurate but I don't like the default plot because it's too ugly and color is terrible. 
+  
+  So I suggest another package `{gt}` in R help us a lot to present fancy result.
+  
+```{r}
+# Finally plot the result:
+library(gt)
+library(gtExtras)
+gt(ABC %>% select(3,2,1),
+   groupname_col = "group") %>% #Reorder the column in data
+  cols_label(vendor_name = md("**Name of vendor**"),
+             group = "Class",
+             revenue = md("**Total revenue**")) %>% 
+  tab_header(
+    title = md("Result of ABC analyst"),
+    subtitle = md("Source: Xuan Loc, Rstudio")
+  ) %>% 
+  cols_align(
+    align = "left",
+    columns = "vendor_name"
+  ) %>% 
+  cols_align(
+    align = "center",
+    columns = "revenue"
+  ) %>% 
+  fmt_number(
+    columns = 'revenue', 
+    decimals = 2, 
+    locale = 'de',
+    pattern = '{x}$'
+  ) %>% 
+  summary_rows(
+    columns = "revenue",
+    fns = list(
+      list(label = md("**Total**"),
+           fn = "sum"),
+      list(label = md("**Average**"),
+           fn = "mean")
+    ),
+    fmt = ~fmt_currency(.)
+  ) %>% 
+  tab_options(
+    data_row.padding = px(0),
+    summary_row.padding= px(0),
+    row_group.padding = px(0),
+    column_labels.padding = px(1),
+    heading.padding = px(1)) %>% 
+  tab_style(
+    location = cells_summary(), 
+    style = list(cell_text(weight = 'bold'),
+                 cell_fill(color = 'dodgerblue4', 
+                           alpha = 0.1))) %>% 
+  gt_theme_excel()
 ```
 
 Now we have classified all the companies on our list, but we need to be prepared for any future collaborations. When considering collab with a new company, we will need to know which classification it falls under in order to decide whether to sign a long-term contract. In this section, I'd like to introduce the Random Forests method, a machine learning algorithm that combines the outputs of multiple decision trees to produce a single result. For more details, you can refer to this page: [Random Forest](https://www.gormanalysis.com/blog/decision-trees-in-r-using-rpart/)
@@ -77,7 +153,7 @@ In R, we can easily implement this using the following code. It's important to n
 ```{r}
 #| warning: false
 #| fig-cap: "The cluster of customer group based on the total PO amount"
-df1<-left_join(m %>% select(c(vendor_name, group)),
+df1<-left_join(ABC %>% select(c(vendor_name, group)),
                df,
                by = "vendor_name")
 
@@ -97,250 +173,6 @@ ggplot(data = df1,
     limits = range(df1$po_amount, na.rm = TRUE), 
     aesthetics = c('colour', 'fill')
   )
-
 ```
 
-## Reactable table:
-
-But look again your output, the table is boring and the name of columns is abbreviation so it perhaps lead to viewer's misunderstanding. In order to familier with reader, R have package {reactable} help us to implement beautiful interactive dashboard.
-
-So before implementing, I will build a function to add reactivity in dashboard, which's similar with us that is filter button. I get this code from [Albert Rapp](https://albert-rapp.de/posts/18_connecting_reactable_ojs/18_connecting_reactable_ojs) and I think you gonna love his education posts about technical field.
-
-Then I will custom the barchart and linechart in `reactable` by package `dataui`. You can read detail and tutorial from this link [dataui](https://timelyportfolio.github.io/dataui/articles/dataui_reactable.html). 
-
-```{r}
-#| warning: false
-#| message: false
-filter_fct <- function(values, name) {
-  tags$select(
-    tags$option(value = "", "All"),
-    purrr::map(unique(values), tags$option),
-    onchange = glue::glue(
-      "Reactable.setFilter(
-        'my-tbl', 
-        '{name}', 
-        event.target.value  // This is the value of the dropdown menu
-      )"
-    )
-  )
-}
-
-library(dataui) # remotes::install_github("timelyportfolio/dataui")
-library(reactable)
-library(sparkline)
-
-Bar = colDef(
-      cell = function(value, index) {
-        dui_sparkline(
-          data = hist(value[[1]], breaks=bins, plot=FALSE)$density,
-          height = 80,
-          component = dui_sparkbarseries()
-          )
-        }
-      )
-
-colpal <- topo.colors(5)
-
-Line <- colDef(
-  cell = function(value, index) {
-    dui_sparkline(
-      data = value[[1]],
-      height = 80,
-      # make some room for our statistics
-      margin = list(right = 40),
-      components = list(
-        dui_sparklineseries(
-          stroke = colpal[index],
-          showArea = TRUE,
-          fill = colpal[index]
-        ),
-        # statistics - display median for reference
-        dui_sparkhorizontalrefline(
-          reference = median(value[[1]]),
-          stroke = colpal[index],
-          strokeDasharray = "4,4",
-          renderLabel = htmlwidgets::JS("(d) => d.toFixed(2)"),
-          labelPosition = "right"
-        ),
-        dui_tooltip(components = list(
-          dui_sparkverticalrefline(
-            strokeDasharray = "4,4",
-            stroke = gray.colors(10)[3]
-          ),
-          dui_sparkpointseries(
-            stroke = colpal[index],
-            fill = "#fff",
-            renderLabel = htmlwidgets::JS("(d) => d.toFixed(2)")
-          )
-        ))
-      )
-    )
-  }
-)
-```
-
-
-So this is the business operation result from all purchase officers in the company. 
-
-```{r}
-df1<-df %>% 
-    group_by(purchase_officers) %>% 
-    summarise(money = list(money),
-              po_amount = list(po_amount)) 
-
-
-reactable(
-  df1,
-  minRows = 5,
-  compact = TRUE,
-  paginationType = "jump",    #"jump" to show a page jump
-  showPageSizeOptions = TRUE, 
-  columns = list(
-    purchase_officers = colDef(name = "Purchase Officer",
-                               filterInput = filter_fct),
-    
-    po_amount = colDef(name = "Quantity of PO",
-                       cell = function(values,index) {
-    sparkline(df1$po_amount[[index]], 
-              type = "box")
-  }),
-    money = colDef(name = "Total amount",
-                   cell = function(value, index) {
-    sparkline(df1$money[[index]])
-  }))
-)
-```
-
-
-```{r}
-library(htmltools)
-df2<-df %>% 
-  select(c(purchase_officers,
-           po_amount,
-           money,
-           tran_status)) %>% 
-  mutate(p = po_amount/money)
-
-reactable(
-  df2,
-  groupBy = c("purchase_officers","tran_status"),
-  filterable = TRUE, 
-  minRows = 5,
-  searchable = TRUE,
-  compact = TRUE,
-  paginationType = "jump",    #"jump" to show a page jump
-  showPageSizeOptions = TRUE, 
-  theme = reactableTheme(
-    borderColor = "#dfe2e5",
-    stripedColor = "#f6f8fa",
-    highlightColor = "#f0f5f9",
-    cellPadding = "8px 12px",
-    style = list(
-      fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
-    )),
-  columns = list(
-    purchase_officers = colDef(name = "Purchase Officer",
-                               filterInput = filter_fct),
-    tran_status = colDef(name = "Status of transaction",
-                         aggregate = "sum", 
-                         cell = function(value) {
-    if (value == "Fully Billed") "\u2714\ufe0f Yes" 
-        
-      else if (value == "Pending Bill"|value =="Pending Receipt"|value =="Closed") browsable(div(shiny::icon('warning', 
-                                     class = 'fas',  
-                                     style = 'color: orange'),"Warning"))  else  "\u274c No"}),
-    po_amount = colDef(name = "Number of PO",
-                       aggregate = "sum",
-                       format = colFormat(separators = TRUE)),
-    money = colDef(name = "Total amount",
-                   aggregate = "sum",
-                   format = colFormat(currency = "USD")),
-    p = colDef(name = "Percentage",
-               aggregate = "mean")
-  )
-)
-```
-
-```{r}
-library(ggiraph)
-p1<-df %>% 
-  mutate(tooltip_label = glue::glue('The total quantity PO is {po_amount}<br> with value is {round(money,2)}')) %>%
-  ggplot(aes(x = po_amount,
-              y = money,
-              col = tran_status)) +
-  geom_point_interactive(size = 4,
-                         aes(tooltip = tooltip_label)) +
-  theme_minimal()
-
-girafe(ggobj = p1,
-       options = list(
-         
-         opts_hover(css = ''),
-         opts_hover_inv(css = "opacity:0.1;"),
-         opts_sizing(rescale = FALSE) 
-         ),
-         height_svg = 6,
-         width_svg = 8
-       )
-```
-
-```{r,warning=F}
-library(lubridate)
-library(ggiraph)
-df<-df %>% 
-  mutate(
-    receiving_department = as.factor(receiving_department),
-    id = levels(receiving_department)[as.numeric(receiving_department)],
-         receiving_department = forcats::fct_reorder(receiving_department, po_amount)
-)
-
-p1<-df %>% 
-  mutate(Month = as.Date(paste(month(po_date),"01",year(po_date),sep = "/"),format = "%m/%d/%Y")) %>%
-  group_by(Month,receiving_department,id) %>% 
-  summarise(mean = mean(money)) %>% 
-  ggplot(aes(y = mean, 
-             x = Month,
-             col = receiving_department,
-             data_id = id))+
-    geom_line_interactive(linewidth = 2.5) +
-    geom_point_interactive(size = 4) +
-  labs(
-    x = "Month",
-    y = "The total revenue",
-    title = "The line chart of revenue monthly"
-  )+
-  theme(
-    text = element_text(
-      color = 'grey20'
-    ),
-    legend.position = 'none',
-    panel.grid.minor = element_blank(),
-    plot.title.position = 'plot'
-  ) 
-
-p2<-df %>% 
-  ggplot(aes(x = money, 
-             y = receiving_department, 
-             fill = receiving_department,
-             data_id = id))+
-    geom_boxplot_interactive(position = position_nudge(y = 0.25),
-                             width = 0.5)+
-    labs(
-    x = "The total revenue",
-    y = element_blank(),
-    title = "The KPI achieved by receiving_department")
-
-library(patchwork)
-girafe(ggobj = p1/p2 + plot_spacer() + plot_layout(widths = c(0.45, 0.1, 0.45)),
-       options = list(
-         
-         opts_hover(css = ''),
-         opts_hover_inv(css = "opacity:0.1;"),
-         opts_sizing(rescale = FALSE) 
-         ),
-         height_svg = 6,
-         width_svg = 10
-       )
-```
-
-Next we will move to the next section is about: [Spatial analyst](Spatial_analyst.qmd)
+Next we will move to the next section is about: [Report concepts](reactable.qmd)

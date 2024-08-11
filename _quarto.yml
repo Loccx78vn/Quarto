@@ -9,14 +9,16 @@ website:
       - href: index.qmd
         text: Home
       - href: projects.qmd
+      - href: reactable.qmd
       - href: spatial.qmd
     tools:
-      - icon: rpubs
+      - icon: github
+        text: Github
+        href: https://github.com/Loccx78vn/Quarto
+      - icon: twitter
         text: Another projects
         href: https://rpubs.com/loccx
-      - icon: github
-        text: Source code
-        href: https://github.com/Loccx78vn/Website
+        
   page-footer:
     right: "Built with [Quarto](https://quarto.org/)"
     left: "&copy; Copyright 2023, Loc cao"
