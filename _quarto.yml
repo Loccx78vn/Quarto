@@ -3,13 +3,17 @@ project:
   output-dir: docs
   
 website:
-  title: "PRACTICE OF SUPPLY CHAIN MANAGEMENT"
+  title: "SUPPLY CHAIN MANAGEMENT"
   navbar: 
     left:
       - href: index.qmd
+        text: Introduction
       - href: projects.qmd
+        text: ABC analyst
       - href: reactable.qmd
+        text: Report concepts
       - href: spatial.qmd
+        text: Geocomputation in R
     tools:
       - icon: github
         text: Github
