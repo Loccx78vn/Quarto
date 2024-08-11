@@ -32,6 +32,5 @@ format:
       light: flatly
       dark: darkly
     toc: true
-      css: styles.css
 
 editor: source
