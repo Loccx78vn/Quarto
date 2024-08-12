@@ -253,10 +253,3 @@ Thanks to all authors of documentaions below that help me complete this pratice.
 * [htmltools with R](https://3mw.albert-rapp.de/) by Albert Rapp.
 
 * [Dataui](https://timelyportfolio.github.io/dataui/articles/dataui_reactable.html)
-
-<<<<<<< HEAD
-
-=======
-* [htmltools with R](https://3mw.albert-rapp.de/) by Albert Rapp.
->>>>>>> 972178495b6c60a76bb0d40f2443c58ba3d5e3c6
-
