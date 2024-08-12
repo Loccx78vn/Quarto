@@ -250,7 +250,9 @@ Thanks to all authors of documentaions below that help me complete this pratice.
 
 * [Multiple Depot in VRP](https://gitlab.com/vikplamenov/vrpoptima/-/blob/main/R/VehicleRouting.R?ref_type=heads) by Viktor Plamenov.
 
+* [htmltools with R](https://3mw.albert-rapp.de/) by Albert Rapp.
+
 * [Dataui](https://timelyportfolio.github.io/dataui/articles/dataui_reactable.html)
 
-* [htmltools with R](https://3mw.albert-rapp.de/) by Albert Rapp.
+
 
