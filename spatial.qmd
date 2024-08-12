@@ -10,7 +10,7 @@ So let's pratice !!!
 
 ## Spatial analyst:
 
-  Now let's start with data contains the information of longitude and latitude of customer's locations. Member install data [optimize](index.qmd) before.
+  Now let's start with data contains the information of longitude and latitude of customer's locations. Remember install data [optimize](index.qmd) before starting.
 
 ```{r}
 #| include: false

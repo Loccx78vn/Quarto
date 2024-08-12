@@ -320,4 +320,4 @@ girafe(ggobj = p1/p2 + plot_spacer() + plot_layout(widths = c(0.45, 0.1, 0.45)),
        )
 ```
 
-Next we will move to the next section is about: [Spatial analyst](Spatial_analyst.qmd)
+Next we will move to the next section is about: [Spatial analyst](spatial.qmd)
