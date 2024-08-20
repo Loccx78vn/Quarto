@@ -90,11 +90,17 @@ ABC<-left_join(abc.df,
   So I suggest another package `{gt}` in R help us a lot to present fancy result.
   
 ```{r}
+#| warning: false
+#| message: false
+#| layout-ncol: 2
 # Finally plot the result:
+A<-ABC %>%  
+  filter(group == "A") %>% 
+  select(3,1,2)
+  
 library(gt)
 library(gtExtras)
-gt(ABC %>% select(3,2,1),
-   groupname_col = "group") %>% #Reorder the column in data
+gt(A[order(A$revenue,decreasing = TRUE),][1:68,]) %>% #Reorder the column in data
   cols_label(vendor_name = md("**Name of vendor**"),
              group = "Class",
              revenue = md("**Total revenue**")) %>% 
@@ -115,28 +121,61 @@ gt(ABC %>% select(3,2,1),
     decimals = 2, 
     locale = 'de',
     pattern = '{x}$'
-  ) %>% 
-  summary_rows(
-    columns = "revenue",
-    fns = list(
-      list(label = md("**Total**"),
-           fn = "sum"),
-      list(label = md("**Average**"),
-           fn = "mean")
-    ),
-    fmt = ~fmt_currency(.)
-  ) %>% 
+  ) %>% grand_summary_rows(
+    columns = revenue,
+    fns =  list(total = ~sum(., na.rm = TRUE),
+                avg = ~mean(., na.rm = TRUE),
+                s.d. = ~sd(., na.rm = TRUE)),
+    fmt = list(~ fmt_currency(.,
+      suffixing = TRUE,
+      locale = list(decimals = 3,
+                    locale = "fr_BE",
+                    curency = "USD")$locale))) %>% 
   tab_options(
     data_row.padding = px(0),
     summary_row.padding= px(0),
     row_group.padding = px(0),
     column_labels.padding = px(1),
     heading.padding = px(1)) %>% 
-  tab_style(
-    location = cells_summary(), 
-    style = list(cell_text(weight = 'bold'),
-                 cell_fill(color = 'dodgerblue4', 
-                           alpha = 0.1))) %>% 
+  gt_theme_excel()
+
+gt(A[order(A$revenue,decreasing = TRUE),][69:137,]) %>% #Reorder the column in data
+  cols_label(vendor_name = md("**Name of vendor**"),
+             group = "Class",
+             revenue = md("**Total revenue**")) %>% 
+  tab_header(
+    title = md("Result of ABC analyst"),
+    subtitle = md("Source: Xuan Loc, Rstudio")
+  ) %>% 
+  cols_align(
+    align = "left",
+    columns = "vendor_name"
+  ) %>% 
+  cols_align(
+    align = "center",
+    columns = "revenue"
+  ) %>% 
+  fmt_number(
+    columns = 'revenue', 
+    decimals = 2, 
+    locale = 'de',
+    pattern = '{x}$'
+  ) %>% grand_summary_rows(
+    columns = revenue,
+    fns =  list(total = ~sum(., na.rm = TRUE),
+                avg = ~mean(., na.rm = TRUE),
+                s.d. = ~sd(., na.rm = TRUE)),
+    fmt = list(~ fmt_currency(.,
+      suffixing = TRUE,
+      locale = list(decimals = 3,
+                    locale = "fr_BE",
+                    curency = "USD")$locale))) %>% 
+  tab_options(
+    data_row.padding = px(0),
+    summary_row.padding= px(0),
+    row_group.padding = px(0),
+    column_labels.padding = px(1),
+    heading.padding = px(1)) %>% 
   gt_theme_excel()
 ```
 
